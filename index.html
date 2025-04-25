@@ -2,57 +2,92 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>歡迎加入</title>
+  <title>LIFF Demo</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 30px;
+      font-family: 'Helvetica Neue', sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      margin: 0;
     }
+
     img {
       border-radius: 50%;
-      width: 150px;
-      height: 150px;
+      width: 140px;
+      height: 140px;
       object-fit: cover;
+      margin-bottom: 20px;
     }
+
     .user-info {
-      margin-top: 20px;
-      font-size: 18px;
+      text-align: center;
+      margin-bottom: 30px;
     }
-    .multi-select {
-      margin-top: 20px;
-      text-align: left;
-      display: inline-block;
-    }
-    .submit-btn {
-      margin-top: 30px;
-      padding: 10px 20px;
+
+    .user-info p {
+      margin: 6px 0;
       font-size: 16px;
+    }
+
+    .multi-select {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 25px;
+    }
+
+    .multi-select label {
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+
+    .submit-btn {
+      background-color: #06C755;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #04a94d;
     }
   </style>
 </head>
 <body>
-  <div id="content">
-    <img id="userImage" src="" alt="User Image">
-    <div class="user-info">
-      <p id="displayName">載入中...</p>
-      <p id="userId"></p>
-    </div>
-
-    <div class="multi-select">
-      <label><input type="checkbox" name="option" value="A"> A</label><br>
-      <label><input type="checkbox" name="option" value="B"> B</label><br>
-      <label><input type="checkbox" name="option" value="C"> C</label><br>
-      <label><input type="checkbox" name="option" value="D"> D</label>
-    </div>
-
-    <button class="submit-btn" onclick="handleSubmit()">送出資料</button>
+  <img id="userImage" src="" alt="User Image">
+  <div class="user-info">
+    <p id="displayName">載入中...</p>
+    <p id="userId"></p>
   </div>
+
+  <div class="multi-select">
+    <label><input type="checkbox" name="option" value="A"> A</label>
+    <label><input type="checkbox" name="option" value="B"> B</label>
+    <label><input type="checkbox" name="option" value="C"> C</label>
+    <label><input type="checkbox" name="option" value="D"> D</label>
+  </div>
+
+  <button class="submit-btn" onclick="handleSubmit()">送出資料</button>
 
   <script>
     async function main() {
-      await liff.init({ liffId: "2007327104" }); // ← 這裡填上你自己的 LIFF ID
+      await liff.init({ liffId: "YOUR_LIFF_ID" });
 
       if (!liff.isLoggedIn()) {
         liff.login();
@@ -65,34 +100,34 @@
     }
 
     function handleSubmit() {
-  const selectedOptions = Array.from(document.querySelectorAll('input[name="option"]:checked'))
-    .map(cb => cb.value);
+      const selectedOptions = Array.from(document.querySelectorAll('input[name="option"]:checked'))
+        .map(cb => cb.value);
 
-  liff.getProfile().then(profile => {
-    const userData = {
-      userId: liff.getContext().userId,
-      displayName: profile.displayName,
-      pictureUrl: profile.pictureUrl,
-      selectedOptions: selectedOptions
-    };
+      liff.getProfile().then(profile => {
+        const userData = {
+          userId: liff.getContext().userId,
+          displayName: profile.displayName,
+          pictureUrl: profile.pictureUrl,
+          selectedOptions: selectedOptions
+        };
 
-    fetch('https://yourserver.com/webhook', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
-    })
-    .then(res => res.ok ? res.json() : Promise.reject(res))
-    .then(data => {
-      alert("送出成功！");
-    })
-    .catch(err => {
-      alert("送出失敗，請稍後再試");
-      console.error(err);
-    });
-  });
-}
+        fetch('https://yourserver.com/webhook', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(userData)
+        })
+        .then(res => res.ok ? res.json() : Promise.reject(res))
+        .then(data => {
+          alert("送出成功！");
+        })
+        .catch(err => {
+          alert("送出失敗，請稍後再試");
+          console.error(err);
+        });
+      });
+    }
 
     main();
   </script>
