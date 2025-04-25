@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>LIFF Demo</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
   <style>
     body {
       font-family: 'Helvetica Neue', sans-serif;
@@ -73,7 +74,6 @@
   <img id="userImage" src="" alt="User Image">
   <div class="user-info">
     <p id="displayName">載入中...</p>
-    <p id="userId"></p>
   </div>
 
   <div class="multi-select">
@@ -95,7 +95,7 @@
         const profile = await liff.getProfile();
         document.getElementById('userImage').src = profile.pictureUrl;
         document.getElementById('displayName').textContent = profile.displayName;
-        document.getElementById('userId').textContent = "UserID: " + liff.getContext().userId;
+        // userId 已移除畫面顯示
       }
     }
 
@@ -103,30 +103,34 @@
       const selectedOptions = Array.from(document.querySelectorAll('input[name="option"]:checked'))
         .map(cb => cb.value);
 
-      liff.getProfile().then(profile => {
-        const userData = {
-          userId: liff.getContext().userId,
-          displayName: profile.displayName,
-          pictureUrl: profile.pictureUrl,
-          selectedOptions: selectedOptions
-        };
+      Promise.all([liff.getProfile(), liff.getContext()])
+        .then(([profile, context]) => {
+          const rawUserId = context.userId || '';
+          const userHashId = CryptoJS.SHA256(rawUserId).toString();
 
-        fetch('https://yourserver.com/webhook', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(userData)
-        })
-        .then(res => res.ok ? res.json() : Promise.reject(res))
-        .then(data => {
-          alert("送出成功！");
-        })
-        .catch(err => {
-          alert("送出失敗，請稍後再試");
-          console.error(err);
+          const userData = {
+            userHashId: userHashId,
+            displayName: profile.displayName,
+            pictureUrl: profile.pictureUrl,
+            selectedOptions: selectedOptions
+          };
+
+          fetch('https://yourserver.com/webhook', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+          })
+          .then(res => res.ok ? res.json() : Promise.reject(res))
+          .then(data => {
+            alert("送出成功！");
+          })
+          .catch(err => {
+            alert("送出失敗，請稍後再試");
+            console.error(err);
+          });
         });
-      });
     }
 
     main();
