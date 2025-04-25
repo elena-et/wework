@@ -1,127 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LINE LIFF •Œ§·∏ÍÆ∆</title>
+    <title>LINE LIFF Á§∫‰æã</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            background-color: white;
         }
-        .profile {
-            margin-top: 20px;
+        
+        .header {
+            position: relative;
+            text-align: center;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .header .url {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+        
+        .close-button {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .content {
+            padding: 20px;
             text-align: center;
         }
-        .profile img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin-bottom: 10px;
+        
+        .content h2 {
+            margin-top: 10px;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: bold;
         }
-        .btn {
-            background-color: #06C755;
+        
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .button {
+            background-color: #00c300;
             color: white;
             border: none;
-            padding: 10px 15px;
             border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 14px;
             cursor: pointer;
-            margin: 10px 0;
+            min-width: 120px;
         }
     </style>
 </head>
 <body>
-    <h1>•Œ§·∏ÍÆ∆</h1>
-    <button id="btnLogin" class="btn">LINE µn§J</button>
-    <button id="btnGetProfile" class="btn">¿Ú®˙∏ÍÆ∆</button>
-    <button id="btnLogout" class="btn">µn•X</button>
-
-    <div id="profileInfo" class="profile">
-        <!-- •Œ§·∏ÍÆ∆±N≈„•‹¶b≥o∏Ã -->
+    <div class="header">
+        <h1>LINE LIFF Á§∫‰æã</h1>
+        <div class="url">elena-et.github.io</div>
+        <div class="close-button">√ó</div>
     </div>
-
-    <!-- §ﬁ§JLIFF SDK -->
+    
+    <div class="content">
+        <h2>Á§∫‰æã</h2>
+        
+        <div class="button-container">
+            <button class="button">LINE ÁôªÂÖ•</button>
+            <button class="button">Áç≤ÂèñË≥áÊñô</button>
+            <button class="button">ÁôªÂá∫</button>
+        </div>
+    </div>
+    
+    <!-- ÂºïÂÖ• LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        // LIFF ID°AΩ–¥¿¥´¶®±z™∫LIFF ID
-        const liffId = "2007327104";
-        
-        // ™Ï©l§∆LIFF
+        // ÂàùÂßãÂåñLIFF
         document.addEventListener('DOMContentLoaded', function() {
-            initializeLiff();
-        });
-        
-        function initializeLiff() {
+            // ÊõøÊèõÁÇ∫ÊÇ®ÁöÑLIFF ID
+            const liffId = "2007327104";
+            
             liff.init({
                 liffId: liffId
             }).then(() => {
-                console.log("LIFF ™Ï©l§∆¶®•\");
+                console.log("LIFF ÂàùÂßãÂåñÊàêÂäü");
                 
-                // ¿À¨dµn§J™¨∫A
+                // Ê™¢Êü•ÁôªÂÖ•ÁãÄÊÖã‰∏¶Êõ¥Êñ∞UI
+                updateUI();
+                
+                // Ë®≠ÁΩÆÊåâÈàï‰∫ã‰ª∂
+                setupButtonEvents();
+                
+            }).catch((err) => {
+                console.error("LIFF ÂàùÂßãÂåñÂ§±Êïó", err);
+            });
+        });
+        
+        function updateUI() {
+            // Ê†πÊìöÁôªÂÖ•ÁãÄÊÖãÊõ¥Êñ∞UI
+            // ÈÄôË£°ÂèØ‰ª•Ê∑ªÂä†ÊÇ®ÁöÑÈÇèËºØ
+        }
+        
+        function setupButtonEvents() {
+            // Ë®≠ÁΩÆÊåâÈàïÈªûÊìä‰∫ã‰ª∂
+            const buttons = document.querySelectorAll('.button');
+            
+            // ÂÅáË®≠Á¨¨‰∏ÄÂÄãÊåâÈàïÊòØÁôªÂÖ•
+            buttons[0].addEventListener('click', () => {
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                }
+            });
+            
+            // ÂÅáË®≠Á¨¨‰∫åÂÄãÊåâÈàïÊòØÁç≤ÂèñË≥áÊñô
+            buttons[1].addEventListener('click', () => {
                 if (liff.isLoggedIn()) {
-                    document.getElementById('btnLogin').style.display = 'none';
+                    liff.getProfile()
+                        .then(profile => {
+                            alert(`ÂêçÁ®±: ${profile.displayName}\nID: ${profile.userId}`);
+                        })
+                        .catch(err => {
+                            console.error("Áç≤ÂèñÁî®Êà∂Ë≥áÊñôÂ§±Êïó", err);
+                        });
                 } else {
-                    document.getElementById('btnGetProfile').style.display = 'none';
-                    document.getElementById('btnLogout').style.display = 'none';
+                    alert("Ë´ãÂÖàÁôªÂÖ•");
                 }
-                
-                // ≥]∏m´ˆ∂s®∆•Û
-                document.getElementById('btnLogin').addEventListener('click', login);
-                document.getElementById('btnGetProfile').addEventListener('click', getProfile);
-                document.getElementById('btnLogout').addEventListener('click', logout);
-                
-            }).catch((err) => {
-                console.error("LIFF ™Ï©l§∆•¢±—", err);
             });
-        }
-        
-        // µn§J
-        function login() {
-            if (!liff.isLoggedIn()) {
-                // ≥]∏mµn§J´·™∫≠´©w¶VURL (•iøÔ)
-                liff.login();
-            }
-        }
-        
-        // ¿Ú®˙∏ÍÆ∆
-        function getProfile() {
-            liff.getProfile().then(profile => {
-                // ≥B≤z•Œ§·∏ÍÆ∆
-                const userId = profile.userId;
-                const displayName = profile.displayName;
-                const pictureUrl = profile.pictureUrl;
-                const statusMessage = profile.statusMessage || "®S¶≥™¨∫A∞TÆß";
-                
-                // ≈„•‹∏ÍÆ∆
-                const profileInfo = document.getElementById('profileInfo');
-                profileInfo.innerHTML = `
-                    <img src="${pictureUrl}" alt="¿Yπ≥">
-                    <p>¶W∫Ÿ: ${displayName}</p>
-                    <p>LINE ID: ${userId}</p>
-                    <p>™¨∫A: ${statusMessage}</p>
-                `;
-                
-                // ¶p™G¶≥≥]∏memail scope°A•i•H¿Ú®˙email
-                if (liff.getDecodedIDToken().email) {
-                    const email = liff.getDecodedIDToken().email;
-                    profileInfo.innerHTML += `<p>Email: ${email}</p>`;
+            
+            // ÂÅáË®≠Á¨¨‰∏âÂÄãÊåâÈàïÊòØÁôªÂá∫
+            buttons[2].addEventListener('click', () => {
+                if (liff.isLoggedIn()) {
+                    liff.logout();
+                    updateUI();
                 }
-                
-            }).catch((err) => {
-                console.error("¿Ú®˙•Œ§·∏ÍÆ∆•¢±—", err);
-                alert("¿Ú®˙•Œ§·∏ÍÆ∆•¢±—: " + err);
             });
-        }
-        
-        // µn•X
-        function logout() {
-            if (liff.isLoggedIn()) {
-                liff.logout();
-                document.getElementById('profileInfo').innerHTML = '';
-                document.getElementById('btnLogin').style.display = 'block';
-                document.getElementById('btnGetProfile').style.display = 'none';
-                document.getElementById('btnLogout').style.display = 'none';
-            }
         }
     </script>
 </body>
