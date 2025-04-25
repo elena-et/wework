@@ -1,155 +1,100 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LINE LIFF 示例</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: white;
-        }
-        
-        .header {
-            position: relative;
-            text-align: center;
-            padding: 15px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .header h1 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        .header .url {
-            font-size: 12px;
-            color: #aaa;
-            margin-top: 5px;
-        }
-        
-        .close-button {
-            position: absolute;
-            right: 15px;
-            top: 15px;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        
-        .content {
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .content h2 {
-            margin-top: 10px;
-            margin-bottom: 30px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .button-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-        
-        .button {
-            background-color: #00c300;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            font-size: 14px;
-            cursor: pointer;
-            min-width: 120px;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>歡迎加入</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    img {
+      border-radius: 50%;
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+    }
+    .user-info {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    .multi-select {
+      margin-top: 20px;
+      text-align: left;
+      display: inline-block;
+    }
+    .submit-btn {
+      margin-top: 30px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <h1>LINE LIFF 示例</h1>
-        <div class="url">elena-et.github.io</div>
-        <div class="close-button">×</div>
+  <div id="content">
+    <img id="userImage" src="" alt="User Image">
+    <div class="user-info">
+      <p id="displayName">載入中...</p>
+      <p id="userId"></p>
     </div>
-    
-    <div class="content">
-        <h2>示例</h2>
-        
-        <div class="button-container">
-            <button class="button">LINE 登入</button>
-            <button class="button">獲取資料</button>
-            <button class="button">登出</button>
-        </div>
+
+    <div class="multi-select">
+      <label><input type="checkbox" name="option" value="A"> A</label><br>
+      <label><input type="checkbox" name="option" value="B"> B</label><br>
+      <label><input type="checkbox" name="option" value="C"> C</label><br>
+      <label><input type="checkbox" name="option" value="D"> D</label>
     </div>
-    
-    <!-- 引入 LIFF SDK -->
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script>
-        // 初始化LIFF
-        document.addEventListener('DOMContentLoaded', function() {
-            // 替換為您的LIFF ID
-            const liffId = "2007327104";
-            
-            liff.init({
-                liffId: liffId
-            }).then(() => {
-                console.log("LIFF 初始化成功");
-                
-                // 檢查登入狀態並更新UI
-                updateUI();
-                
-                // 設置按鈕事件
-                setupButtonEvents();
-                
-            }).catch((err) => {
-                console.error("LIFF 初始化失敗", err);
-            });
-        });
-        
-        function updateUI() {
-            // 根據登入狀態更新UI
-            // 這裡可以添加您的邏輯
-        }
-        
-        function setupButtonEvents() {
-            // 設置按鈕點擊事件
-            const buttons = document.querySelectorAll('.button');
-            
-            // 假設第一個按鈕是登入
-            buttons[0].addEventListener('click', () => {
-                if (!liff.isLoggedIn()) {
-                    liff.login();
-                }
-            });
-            
-            // 假設第二個按鈕是獲取資料
-            buttons[1].addEventListener('click', () => {
-                if (liff.isLoggedIn()) {
-                    liff.getProfile()
-                        .then(profile => {
-                            alert(`名稱: ${profile.displayName}\nID: ${profile.userId}`);
-                        })
-                        .catch(err => {
-                            console.error("獲取用戶資料失敗", err);
-                        });
-                } else {
-                    alert("請先登入");
-                }
-            });
-            
-            // 假設第三個按鈕是登出
-            buttons[2].addEventListener('click', () => {
-                if (liff.isLoggedIn()) {
-                    liff.logout();
-                    updateUI();
-                }
-            });
-        }
-    </script>
+
+    <button class="submit-btn" onclick="handleSubmit()">送出資料</button>
+  </div>
+
+  <script>
+    async function main() {
+      await liff.init({ liffId: "2007327104" }); // ← 這裡填上你自己的 LIFF ID
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
+        const profile = await liff.getProfile();
+        document.getElementById('userImage').src = profile.pictureUrl;
+        document.getElementById('displayName').textContent = profile.displayName;
+        document.getElementById('userId').textContent = "UserID: " + liff.getContext().userId;
+      }
+    }
+
+    function handleSubmit() {
+  const selectedOptions = Array.from(document.querySelectorAll('input[name="option"]:checked'))
+    .map(cb => cb.value);
+
+  liff.getProfile().then(profile => {
+    const userData = {
+      userId: liff.getContext().userId,
+      displayName: profile.displayName,
+      pictureUrl: profile.pictureUrl,
+      selectedOptions: selectedOptions
+    };
+
+    fetch('https://yourserver.com/webhook', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    })
+    .then(res => res.ok ? res.json() : Promise.reject(res))
+    .then(data => {
+      alert("送出成功！");
+    })
+    .catch(err => {
+      alert("送出失敗，請稍後再試");
+      console.error(err);
+    });
+  });
+}
+
+    main();
+  </script>
 </body>
 </html>
