@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE LIFF 用戶資料</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .profile {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .profile img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        .btn {
+            background-color: #06C755;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>用戶資料</h1>
+    <button id="btnLogin" class="btn">LINE 登入</button>
+    <button id="btnGetProfile" class="btn">獲取資料</button>
+    <button id="btnLogout" class="btn">登出</button>
+
+    <div id="profileInfo" class="profile">
+        <!-- 用戶資料將顯示在這裡 -->
+    </div>
+
+    <!-- 引入LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        // LIFF ID，請替換成您的LIFF ID
+        const liffId = "2007327104";
+        
+        // 初始化LIFF
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLiff();
+        });
+        
+        function initializeLiff() {
+            liff.init({
+                liffId: liffId
+            }).then(() => {
+                console.log("LIFF 初始化成功");
+                
+                // 檢查登入狀態
+                if (liff.isLoggedIn()) {
+                    document.getElementById('btnLogin').style.display = 'none';
+                } else {
+                    document.getElementById('btnGetProfile').style.display = 'none';
+                    document.getElementById('btnLogout').style.display = 'none';
+                }
+                
+                // 設置按鈕事件
+                document.getElementById('btnLogin').addEventListener('click', login);
+                document.getElementById('btnGetProfile').addEventListener('click', getProfile);
+                document.getElementById('btnLogout').addEventListener('click', logout);
+                
+            }).catch((err) => {
+                console.error("LIFF 初始化失敗", err);
+            });
+        }
+        
+        // 登入
+        function login() {
+            if (!liff.isLoggedIn()) {
+                // 設置登入後的重定向URL (可選)
+                liff.login();
+            }
+        }
+        
+        // 獲取資料
+        function getProfile() {
+            liff.getProfile().then(profile => {
+                // 處理用戶資料
+                const userId = profile.userId;
+                const displayName = profile.displayName;
+                const pictureUrl = profile.pictureUrl;
+                const statusMessage = profile.statusMessage || "沒有狀態訊息";
+                
+                // 顯示資料
+                const profileInfo = document.getElementById('profileInfo');
+                profileInfo.innerHTML = `
+                    <img src="${pictureUrl}" alt="頭像">
+                    <p>名稱: ${displayName}</p>
+                    <p>LINE ID: ${userId}</p>
+                    <p>狀態: ${statusMessage}</p>
+                `;
+                
+                // 如果有設置email scope，可以獲取email
+                if (liff.getDecodedIDToken().email) {
+                    const email = liff.getDecodedIDToken().email;
+                    profileInfo.innerHTML += `<p>Email: ${email}</p>`;
+                }
+                
+            }).catch((err) => {
+                console.error("獲取用戶資料失敗", err);
+                alert("獲取用戶資料失敗: " + err);
+            });
+        }
+        
+        // 登出
+        function logout() {
+            if (liff.isLoggedIn()) {
+                liff.logout();
+                document.getElementById('profileInfo').innerHTML = '';
+                document.getElementById('btnLogin').style.display = 'block';
+                document.getElementById('btnGetProfile').style.display = 'none';
+                document.getElementById('btnLogout').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
