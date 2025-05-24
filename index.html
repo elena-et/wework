@@ -1,139 +1,493 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-  <meta charset="utf-8">
-  <title>LIFF Demo</title>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
-  <style>
-    body {
-      font-family: 'Helvetica Neue', sans-serif;
-      background-color: #f9f9f9;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
-      margin: 0;
-    }
-
-    img {
-      border-radius: 50%;
-      width: 140px;
-      height: 140px;
-      object-fit: cover;
-      margin-bottom: 20px;
-    }
-
-    .user-info {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .user-info p {
-      margin: 6px 0;
-      font-size: 16px;
-    }
-
-    .multi-select {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      background: #fff;
-      border: 1px solid #ddd;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      width: 100%;
-      max-width: 300px;
-      margin-bottom: 25px;
-    }
-
-    .multi-select label {
-      margin-bottom: 10px;
-      font-size: 15px;
-    }
-
-    .submit-btn {
-      background-color: #06C755;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 24px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .submit-btn:hover {
-      background-color: #04a94d;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make.com 會員註冊</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        :root {
+            --make-purple: #330066;
+            --make-purple-light: #5a3a8a;
+            --make-purple-dark: #270049;
+            --make-gradient: linear-gradient(135deg, #330066, #5a3a8a);
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f9f7ff;
+            background-image: radial-gradient(circle at top right, rgba(94, 58, 138, 0.1), transparent 400px);
+        }
+        
+        .form-container {
+            background: white;
+            box-shadow: 0 10px 30px rgba(51, 0, 102, 0.1);
+            border-radius: 12px;
+            border-top: 4px solid var(--make-purple);
+        }
+        
+        .form-header {
+            background: var(--make-gradient);
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .form-input {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .form-input:focus {
+            border-color: var(--make-purple);
+            box-shadow: 0 0 0 3px rgba(51, 0, 102, 0.2);
+            outline: none;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .required::after {
+            content: "*";
+            color: #e53e3e;
+            margin-left: 4px;
+        }
+        
+        .submit-btn {
+            background: var(--make-gradient);
+            color: white;
+            border-radius: 6px;
+            padding: 0.75rem 2rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            box-shadow: 0 4px 6px rgba(51, 0, 102, 0.2);
+        }
+        
+        .submit-btn:hover {
+            box-shadow: 0 6px 12px rgba(51, 0, 102, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(51, 0, 102, 0.2);
+        }
+        
+        .radio-container {
+            display: flex;
+            align-items: center;
+            margin-right: 1.5rem;
+        }
+        
+        .radio-container input[type="radio"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e0;
+            border-radius: 50%;
+            margin-right: 8px;
+            position: relative;
+            transition: all 0.2s;
+        }
+        
+        .radio-container input[type="radio"]:checked {
+            border-color: var(--make-purple);
+        }
+        
+        .radio-container input[type="radio"]:checked::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background-color: var(--make-purple);
+            border-radius: 50%;
+        }
+        
+        .select-container {
+            position: relative;
+        }
+        
+        .select-container::after {
+            content: "▼";
+            font-size: 0.8rem;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+            pointer-events: none;
+        }
+        
+        select.form-input {
+            appearance: none;
+            padding-right: 2.5rem;
+        }
+        
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .success-message {
+            background: linear-gradient(135deg, #38a169, #2f855a);
+            color: white;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(47, 133, 90, 0.2);
+        }
+        
+        .success-icon {
+            background: white;
+            color: #38a169;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .error-alert {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            color: white;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(197, 48, 48, 0.2);
+        }
+        
+        .error-icon {
+            background: white;
+            color: #e53e3e;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .form-container {
+                border-radius: 0;
+                box-shadow: none;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+    <style>
+*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:0.5rem}.mb-6{margin-bottom:1.5rem}.mt-2{margin-top:0.5rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.flex{display:flex}.grid{display:grid}.hidden{display:none}.min-h-screen{min-height:100vh}.max-w-4xl{max-width:56rem}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.gap-6{gap:1.5rem}.p-6{padding:1.5rem}.px-4{padding-left:1rem;padding-right:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.font-bold{font-weight:700}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-purple-200{--tw-text-opacity:1;color:rgb(233 213 255 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}@media (min-width: 768px){.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}
+    </style>
 </head>
-<body>
-  <img id="userImage" src="" alt="User Image">
-  <div class="user-info">
-    <p id="displayName">載入中...</p>
-  </div>
+<body class="min-h-screen py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="form-container">
+            <div class="form-header p-6 mb-2">
+                <h1 class="text-2xl font-bold text-white">Make.com 會員註冊</h1>
+                <p class="text-purple-200 mt-2">請填寫以下資料完成註冊</p>
+            </div>
+            
+            <form id="registrationForm" class="p-6">
+                <div id="formStatus" class="hidden mb-6"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 form-grid">
+                    <!-- 姓名 -->
+                    <div>
+                        <label for="name" class="form-label required">姓名</label>
+                        <input type="text" id="name" name="name" class="form-input" placeholder="請輸入您的姓名" required>
+                        <div class="error-message" id="name-error"></div>
+                    </div>
+                    
+                    <!-- 電子郵件 -->
+                    <div>
+                        <label for="email" class="form-label required">電子郵件</label>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="example@mail.com" required>
+                        <div class="error-message" id="email-error"></div>
+                    </div>
+                    
+                    <!-- 性別 -->
+                    <div>
+                        <label class="form-label required">性別</label>
+                        <div class="flex mt-2">
+                            <label class="radio-container">
+                                <input type="radio" name="gender" value="男" required>
+                                <span>男</span>
+                            </label>
+                            <label class="radio-container">
+                                <input type="radio" name="gender" value="女">
+                                <span>女</span>
+                            </label>
+                        </div>
+                        <div class="error-message" id="gender-error"></div>
+                    </div>
+                    
+                    <!-- 行動電話 -->
+                    <div>
+                        <label for="phone" class="form-label required">行動電話</label>
+                        <input type="tel" id="phone" name="phone" class="form-input" placeholder="0912345678" required>
+                        <div class="error-message" id="phone-error"></div>
+                    </div>
+                    
+                    <!-- 公司名稱 -->
+                    <div>
+                        <label for="company" class="form-label required">公司名稱</label>
+                        <input type="text" id="company" name="company" class="form-input" placeholder="請輸入公司名稱" required>
+                        <div class="error-message" id="company-error"></div>
+                    </div>
+                    
+                    <!-- Make Org ID -->
+                    <div>
+                        <label for="orgId" class="form-label required">Make Org ID</label>
+                        <input type="text" id="orgId" name="orgId" class="form-input" placeholder="請輸入數字 ID" required>
+                        <div class="error-message" id="orgId-error"></div>
+                    </div>
+                </div>
+                
+                <!-- 地址 -->
+                <div class="mt-6">
+                    <label for="address" class="form-label required">地址</label>
+                    <input type="text" id="address" name="address" class="form-input" placeholder="請輸入完整地址" required>
+                    <div class="error-message" id="address-error"></div>
+                </div>
+                
+                <!-- 從哪裡得知 -->
+                <div class="mt-6">
+                    <label for="source" class="form-label required">從哪裡得知</label>
+                    <div class="select-container">
+                        <select id="source" name="source" class="form-input" required>
+                            <option value="" disabled selected>請選擇資訊來源</option>
+                            <option value="FB">FB</option>
+                            <option value="LINE">LINE</option>
+                            <option value="搜尋">搜尋</option>
+                            <option value="YT">YT</option>
+                            <option value="Blog">Blog</option>
+                            <option value="電子郵件">電子郵件</option>
+                        </select>
+                    </div>
+                    <div class="error-message" id="source-error"></div>
+                </div>
+                
+                <!-- 備註 -->
+                <div class="mt-6">
+                    <label for="notes" class="form-label">備註</label>
+                    <textarea id="notes" name="notes" class="form-input" rows="4" placeholder="如有其他需求，請在此說明（選填）"></textarea>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <button type="submit" class="submit-btn">送出註冊資料</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="text-center text-gray-500 text-sm mt-6">
+            © 2023 Make.com 版權所有
+        </div>
+    </div>
 
-  <div class="multi-select">
-    <label><input type="checkbox" name="option" value="A"> A</label>
-    <label><input type="checkbox" name="option" value="B"> B</label>
-    <label><input type="checkbox" name="option" value="C"> C</label>
-    <label><input type="checkbox" name="option" value="D"> D</label>
-  </div>
-
-  <button class="submit-btn" onclick="handleSubmit()">送出資料</button>
-
-  <script>
-    async function main() {
-      await liff.init({ liffId: "2007327104-LJnzO0BO" });
-
-      if (!liff.isLoggedIn()) {
-        liff.login();
-      } else {
-        const profile = await liff.getProfile();
-        document.getElementById('userImage').src = profile.pictureUrl;
-        document.getElementById('displayName').textContent = profile.displayName;
-        // userId 已移除畫面顯示
-      }
-    }
-
-    function handleSubmit() {
-      const selectedOptions = Array.from(document.querySelectorAll('input[name="option"]:checked'))
-        .map(cb => cb.value);
-
-      Promise.all([liff.getProfile(), liff.getContext()])
-        .then(([profile, context]) => {
-          const rawUserId = context.userId || '';
-          const userHashId = CryptoJS.SHA256(rawUserId).toString();
-
-          const userData = {
-            userHashId: userHashId,
-            displayName: profile.displayName,
-            pictureUrl: profile.pictureUrl,
-            selectedOptions: selectedOptions
-          };
-
-          fetch('https://yourserver.com/webhook', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userData)
-          })
-          .then(res => res.ok ? res.json() : Promise.reject(res))
-          .then(data => {
-            alert("送出成功！");
-          })
-          .catch(err => {
-            alert("送出失敗，請稍後再試");
-            console.error(err);
-          });
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registrationForm');
+            const formStatus = document.getElementById('formStatus');
+            
+            // 表單驗證函數
+            function validateForm() {
+                let isValid = true;
+                
+                // 清除所有錯誤訊息
+                document.querySelectorAll('.error-message').forEach(el => {
+                    el.textContent = '';
+                });
+                
+                // 驗證姓名
+                const name = document.getElementById('name');
+                if (!name.value.trim()) {
+                    document.getElementById('name-error').textContent = '請輸入姓名';
+                    isValid = false;
+                }
+                
+                // 驗證電子郵件
+                const email = document.getElementById('email');
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email.value.trim()) {
+                    document.getElementById('email-error').textContent = '請輸入電子郵件';
+                    isValid = false;
+                } else if (!emailRegex.test(email.value)) {
+                    document.getElementById('email-error').textContent = '請輸入有效的電子郵件格式';
+                    isValid = false;
+                }
+                
+                // 驗證性別
+                const gender = document.querySelector('input[name="gender"]:checked');
+                if (!gender) {
+                    document.getElementById('gender-error').textContent = '請選擇性別';
+                    isValid = false;
+                }
+                
+                // 驗證行動電話
+                const phone = document.getElementById('phone');
+                const phoneRegex = /^09\d{8}$/;
+                if (!phone.value.trim()) {
+                    document.getElementById('phone-error').textContent = '請輸入行動電話';
+                    isValid = false;
+                } else if (!phoneRegex.test(phone.value)) {
+                    document.getElementById('phone-error').textContent = '請輸入有效的台灣手機號碼格式 (例如: 0912345678)';
+                    isValid = false;
+                }
+                
+                // 驗證公司名稱
+                const company = document.getElementById('company');
+                if (!company.value.trim()) {
+                    document.getElementById('company-error').textContent = '請輸入公司名稱';
+                    isValid = false;
+                }
+                
+                // 驗證地址
+                const address = document.getElementById('address');
+                if (!address.value.trim()) {
+                    document.getElementById('address-error').textContent = '請輸入地址';
+                    isValid = false;
+                }
+                
+                // 驗證來源
+                const source = document.getElementById('source');
+                if (source.value === "") {
+                    document.getElementById('source-error').textContent = '請選擇資訊來源';
+                    isValid = false;
+                }
+                
+                // 驗證 Make Org ID
+                const orgId = document.getElementById('orgId');
+                const orgIdRegex = /^\d+$/;
+                if (!orgId.value.trim()) {
+                    document.getElementById('orgId-error').textContent = '請輸入 Make Org ID';
+                    isValid = false;
+                } else if (!orgIdRegex.test(orgId.value)) {
+                    document.getElementById('orgId-error').textContent = 'Make Org ID 必須為純數字';
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            // 表單提交處理
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    return;
+                }
+                
+                // 收集表單數據
+                const formData = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    gender: document.querySelector('input[name="gender"]:checked').value,
+                    phone: document.getElementById('phone').value,
+                    company: document.getElementById('company').value,
+                    address: document.getElementById('address').value,
+                    source: document.getElementById('source').value,
+                    orgId: document.getElementById('orgId').value,
+                    notes: document.getElementById('notes').value
+                };
+                
+                // 顯示載入中狀態
+                formStatus.innerHTML = `
+                    <div class="bg-purple-100 text-purple-800 p-4 rounded-md flex items-center">
+                        <svg class="animate-spin h-5 w-5 mr-3 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        資料傳送中，請稍候...
+                    </div>
+                `;
+                formStatus.classList.remove('hidden');
+                
+                // 發送 HTTP POST 請求
+                fetch('https://webhook.make.com', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('網路回應不正常');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 顯示成功訊息
+                    formStatus.innerHTML = `
+                        <div class="success-message">
+                            <div class="success-icon">✓</div>
+                            <div>${data.RetuenMSG || '註冊成功！感謝您的申請。'}</div>
+                        </div>
+                    `;
+                    
+                    // 清空表單
+                    form.reset();
+                })
+                .catch(error => {
+                    // 顯示錯誤訊息
+                    formStatus.innerHTML = `
+                        <div class="error-alert">
+                            <div class="error-icon">!</div>
+                            <div>表單送出失敗，請稍後再試。錯誤：${error.message}</div>
+                        </div>
+                    `;
+                });
+            });
         });
-    }
+    </script>
+<script>
+ window.difyChatbotConfig = {
+  token: 'PR8Nf4LMacowt7aw',
+  systemVariables: {
+    // user_id: 'YOU CAN DEFINE USER ID HERE',
+    // conversation_id: 'YOU CAN DEFINE CONVERSATION ID HERE, IT MUST BE A VALID UUID',
+  },
+ }
+</script>
+<script
+ src="https://udify.app/embed.min.js"
+ id="PR8Nf4LMacowt7aw"
+ defer>
+</script>
+<style>
+  #dify-chatbot-bubble-button {
+    background-color: #1C64F2 !important;
+  }
+  #dify-chatbot-bubble-window {
+    width: 24rem !important;
+    height: 40rem !important;
+  }
+</style>
 
-    main();
-  </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9433e16554870738',t:'MTc0NzgyODQ4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
